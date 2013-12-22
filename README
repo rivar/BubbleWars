@@ -1,3 +1,7 @@
-1) Download Processing, OpenNI, SimpleOpenNI
-2) Install OpenNI (needs libusb)
-3) Import Processing (core.jar), OpenNI (org.openni.jar) and SimpleOpenNI (SimpleOpenNI.jar) to build path
+Bubble Wars is our small project for the Mobile Interaction course.
+
+1) Create a Java project in Eclipse
+2) Pull github into that project
+3) Download Processing, OpenNI (latest 1.x), SimpleOpenNI
+4) Install OpenNI (needs libusb)
+5) Add Processing (core.jar), OpenNI (org.openni.jar) and SimpleOpenNI (SimpleOpenNI.jar) to build path
