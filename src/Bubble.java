@@ -19,7 +19,12 @@ public class Bubble {
 	int posYOffset = 0;
 	
 	public void move(){
-		// TODO avoid running out of the frame
+		// TODO avoid running out of the frame not that dirty
+		if(pos.x < 0 || pos.x > 640 || pos.y < 0 || pos.y > 480){
+			posXStabilizerCounter = 0;
+			posYStabilizerCounter = 0;
+		}
+		
 		// TODO check for other bubbles to avoid collisions
 		// TODO play with max/min values
 		if(posXStabilizerCounter == 0){
