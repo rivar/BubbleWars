@@ -9,4 +9,6 @@ public class Constants {
 	public static final int MAX_BUBBLES = 20;
 	public static final int MIN_BUBBLE_SIZE = 15;
 	public static final int MAX_BUBBLE_SIZE = 30;
+	public static final int HIGHSCORE_FONT_SIZE = 32;
+	public static final int BODYPART_BUBBLE_MINIMUM_DISTANCE = 15;
 }

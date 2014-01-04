@@ -26,4 +26,8 @@ public class User {
 	public void incrementScore(int points){
 		score += points;
 	}
+	
+	public int getScore(){
+		return score;
+	}
 }

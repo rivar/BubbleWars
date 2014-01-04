@@ -1,4 +1,5 @@
 import processing.core.PApplet;
+import processing.core.PFont;
 import processing.core.PVector;
 import SimpleOpenNI.SimpleOpenNI;
 
@@ -18,6 +19,7 @@ public class Controller extends PApplet {
 	Date startTs;
 	Date currentTs;
 	Date bubbleSetTs;
+	PFont font;
 	
 	
 	public void setup(){
@@ -31,6 +33,9 @@ public class Controller extends PApplet {
 		soni.enableDepth();
 		soni.enableUser();
 		size(soni.depthWidth(), soni.depthHeight());
+		
+		// screen font
+		font = createFont("Arial",Constants.HIGHSCORE_FONT_SIZE,true);
 	}
 	
 	public void onNewUser(SimpleOpenNI context, int userId){
@@ -90,7 +95,7 @@ public class Controller extends PApplet {
 				
 				bubbles.add(bubble);
 				
-				System.out.println("X: "+x+" Y: "+y);
+//				System.out.println("X: "+x+" Y: "+y);
 			}
 		}
 	}
@@ -108,7 +113,15 @@ public class Controller extends PApplet {
 	}
 	
 	private boolean isHit(Bubble bubble, BodyPart part){
-		// TODO
+		// check if x and y coordinates are close enough
+		if(isCloseEnough(bubble.getPos().x, part.getPart2d().x)
+			&& isCloseEnough(bubble.getPos().y, part.getPart2d().y)) return true;
+		return false;
+	}
+	
+	private boolean isCloseEnough(float bubblePos, float partPos){
+//		System.out.println("isCloseEnough: abs(" + bubblePos + " - " + partPos + ") < 15");
+		if(abs(bubblePos - partPos) < Constants.BODYPART_BUBBLE_MINIMUM_DISTANCE) return true;
 		return false;
 	}
 	
@@ -123,10 +136,22 @@ public class Controller extends PApplet {
 		ellipse(bubble.getPos().x, bubble.getPos().y, bubble.getSize(), bubble.getSize());
 	}
 	
+	private void drawHighscore(User user){
+		textFont(font);
+		fill(255);
+		// TODO display highscore for multiple player
+		text("Score: " + user.getScore(), 10, 30);
+	}
+	
 	public void draw(){
 		
 		// update ts
 		currentTs = new Date();
+		
+		if(currentTs.getTime() - startTs.getTime() > 60000){
+			System.out.println("Shutdown system after 60s to prevent system crash :P");
+			System.exit(CLOSE);
+		}
 		
 		// generate bubbles
 		generateBubbles();
@@ -142,6 +167,8 @@ public class Controller extends PApplet {
 				
 				User user = getUser(userIds[i]);
 				ArrayList<Bubble> hits = new ArrayList<Bubble>();
+				
+				drawHighscore(user);
 				
 				// get positions and draw
 				for(BodyPart part : user.getParts()){
