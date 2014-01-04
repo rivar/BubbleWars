@@ -1,6 +1,5 @@
 import processing.core.PVector;
 
-
 public class Bubble {
 
 	PVector pos;
@@ -8,9 +7,35 @@ public class Bubble {
 	int size;
 	int points = 10; // TODO....
 	
+	// movement stabilizer determines how many pixels to one direction
+	int posXStabilizerCounter = 0;
+	int posYStabilizerCounter = 0;
+
+	/*
+	 * movement offset is applied to the bubbles as long as
+	 * the stabilizer counter is not 0. interval is [-1;1]
+	 */
+	int posXOffset = 0;
+	int posYOffset = 0;
 	
 	public void move(){
-		// TODO
+		// TODO avoid running out of the frame
+		// TODO check for other bubbles to avoid collisions
+		// TODO play with max/min values
+		if(posXStabilizerCounter == 0){
+			// generate int values of interval [min;max]: Min + (int)(Math.random() * ((Max - Min) + 1))
+			posXStabilizerCounter = 10 + (int)(Math.random()*41);
+			posXOffset = -1 + (int)(Math.random() * 3);
+		} else{
+			posXStabilizerCounter--;
+		}
+		if(posYStabilizerCounter == 0){
+			posYStabilizerCounter = 10 + (int)(Math.random()*41);
+			posYOffset = -1 + (int)(Math.random() * 3);
+		} else{
+			posYStabilizerCounter--;
+		}
+		pos.set(pos.x+posXOffset, pos.y+posYOffset);
 	}
 	
 	public Bubble(int size){
