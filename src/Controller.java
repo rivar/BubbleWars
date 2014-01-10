@@ -1,5 +1,6 @@
 import processing.core.PApplet;
 import processing.core.PFont;
+import processing.core.PImage;
 import processing.core.PVector;
 import SimpleOpenNI.SimpleOpenNI;
 
@@ -20,6 +21,7 @@ public class Controller extends PApplet {
 	Date currentTs;
 	Date bubbleSetTs;
 	PFont font;
+	PImage backgroundImage = null;
 	
 	
 	public void setup(){
@@ -30,15 +32,22 @@ public class Controller extends PApplet {
 		
 		// cam setup
 		soni = new SimpleOpenNI(this);
+		soni.setMirror(true);
 		soni.enableDepth();
 		soni.enableUser();
+		smooth();
+		
 		size(soni.depthWidth(), soni.depthHeight());
+		
+		backgroundImage = loadImage("background_in_game.jpg");
+		backgroundImage.resize(soni.depthWidth(), soni.depthHeight());
 		
 		// screen font
 		font = createFont("Arial",Constants.HIGHSCORE_FONT_SIZE,true);
 	}
 	
 	public void onNewUser(SimpleOpenNI context, int userId){
+		//context.setMirror(true);
 		context.startTrackingSkeleton(userId);
 		users.add(new User(userId));
 	}
@@ -57,7 +66,7 @@ public class Controller extends PApplet {
 	}
 	
 	private void drawBodyPart(BodyPart part){
-		float d = (float) (512e3 / part.getPart3d().z)/2;
+		float d = (float) (512e3 / part.getPart3d().z)/4;
 		ellipseMode(CENTER);
 		determineFillColor(part.getColor());
 		ellipse(part.getPart2d().x, part.getPart2d().y, d, d);
@@ -144,22 +153,44 @@ public class Controller extends PApplet {
 	}
 	
 	public void draw(){
-		
+		//background(0);
+		//imageMode(CORNER);
+		image(backgroundImage,0,0);
 		// update ts
 		currentTs = new Date();
 		
-		if(currentTs.getTime() - startTs.getTime() > 60000){
-			System.out.println("Shutdown system after 60s to prevent system crash :P");
-			System.exit(CLOSE);
-		}
+		//if(currentTs.getTime() - startTs.getTime() > 60000){
+		//	System.out.println("Shutdown system after 60s to prevent system crash :P");
+		//	System.exit(CLOSE);
+		//}
 		
 		// generate bubbles
 		generateBubbles();
 		
 		// update cam info
 		soni.update();
-		imageMode(CORNER);
-		image(soni.userImage(),0,0);
+		//image(soni.userImage(),0,0);
+		PImage playerImg = soni.depthImage();
+		playerImg.loadPixels();
+		loadPixels();
+		
+		// set pixels
+		int[] userMap;
+		if(soni.getNumberOfUsers() > 0){
+			userMap = soni.userMap();
+			//loadPixels();
+			for(int i=0; i < userMap.length; i++){
+				if(userMap[i] != 0){
+					// user TODO: different coloring per user?
+					pixels[i] = playerImg.pixels[i]+100;
+				}
+				else{
+					// background
+					//pixels[i] = color(0,0,0);
+				}
+			}
+			updatePixels();
+		}
 		
 		int[] userIds = soni.getUsers();
 		for(int i=0; i<userIds.length; i++){
