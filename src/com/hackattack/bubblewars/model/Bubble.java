@@ -1,3 +1,4 @@
+package com.hackattack.bubblewars.model;
 import processing.core.PVector;
 
 public class Bubble {

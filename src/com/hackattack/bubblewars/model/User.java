@@ -1,3 +1,4 @@
+package com.hackattack.bubblewars.model;
 import java.util.ArrayList;
 
 import SimpleOpenNI.SimpleOpenNI;
@@ -13,6 +14,8 @@ public class User {
 		this.id = id;
 		parts.add(new BodyPart(SimpleOpenNI.SKEL_LEFT_HAND));
 		parts.add(new BodyPart(SimpleOpenNI.SKEL_RIGHT_HAND));
+		parts.add(new BodyPart(SimpleOpenNI.SKEL_LEFT_FOOT));
+		parts.add(new BodyPart(SimpleOpenNI.SKEL_RIGHT_FOOT));
 	}
 
 	public int getId() {

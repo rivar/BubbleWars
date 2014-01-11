@@ -1,3 +1,4 @@
+package com.hackattack.bubblewars.main;
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PImage;
@@ -7,6 +8,13 @@ import SimpleOpenNI.SimpleOpenNI;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.hackattack.bubblewars.model.BodyPart;
+import com.hackattack.bubblewars.model.Bubble;
+import com.hackattack.bubblewars.model.User;
+import com.hackattack.bubblewars.pools.BubblePool;
+import com.hackattack.bubblewars.pools.UserPool;
+import com.hackattack.bubblewars.util.Util;
+
 public class Controller extends PApplet {
 
 	/**
@@ -15,20 +23,19 @@ public class Controller extends PApplet {
 	private static final long serialVersionUID = 1L;
 	
 	public SimpleOpenNI soni;
-	ArrayList<Bubble> bubbles = new ArrayList<Bubble>();
-	ArrayList<User> users = new ArrayList<User>();
+	
 	Date startTs;
 	Date currentTs;
-	Date bubbleSetTs;
 	PFont font;
 	PImage backgroundImage = null;
+	BubblePool bubblePool;
+	UserPool userPool;
 	
 	
 	public void setup(){
 		// ts
 		startTs= new Date();
 		currentTs = startTs;
-		bubbleSetTs = startTs;
 		
 		// cam setup
 		soni = new SimpleOpenNI(this);
@@ -36,6 +43,10 @@ public class Controller extends PApplet {
 		soni.enableDepth();
 		soni.enableUser();
 		smooth();
+		
+		// pools
+		bubblePool = new BubblePool(soni);
+		userPool = new UserPool();
 		
 		size(soni.depthWidth(), soni.depthHeight());
 		
@@ -49,27 +60,21 @@ public class Controller extends PApplet {
 	public void onNewUser(SimpleOpenNI context, int userId){
 		//context.setMirror(true);
 		context.startTrackingSkeleton(userId);
-		users.add(new User(userId));
+		userPool.addUser(userId);
 	}
 	
 	public void onLostUser(SimpleOpenNI context, int userId){
-		User user = getUser(userId);
-		users.remove(user);
-	}
-	
-	private void determineFillColor(int color){
-		if(color == 0) fill(255,0,0,80);
-		else if(color == 1) fill(0,255,0,80);
-		else if(color == 2) fill(0,0,255,80);
-		else if(color == 3) fill(0,255,255,80);
-		else fill(0,0,0,0);
+		userPool.removeUser(userId);
 	}
 	
 	private void drawBodyPart(BodyPart part){
 		float d = (float) (512e3 / part.getPart3d().z)/4;
 		ellipseMode(CENTER);
-		determineFillColor(part.getColor());
-		ellipse(part.getPart2d().x, part.getPart2d().y, d, d);
+		float[] fc = Util.determineFillColor(part.getColor());
+		if(fc.length>3){
+			fill(fc[0],fc[1],fc[2],fc[3]);
+			ellipse(part.getPart2d().x, part.getPart2d().y, d, d);
+		}
 	}
 	
 	private void get2DPositionAndDraw(BodyPart part, int userId){
@@ -88,61 +93,13 @@ public class Controller extends PApplet {
 		}
 	}
 	
-	private void generateBubbles(){
-		if(currentTs.getTime() - bubbleSetTs.getTime() > Constants.BUBBLE_SPAWN_INTERVAL){
-			int num = (int)(Constants.MAX_BUBBLES - bubbles.size())/2;
-			for(int i = 0; i<num; i++){
-				// TODO: collision etc...
-				
-				int size = Math.round(random(Constants.MIN_BUBBLE_SIZE, Constants.MAX_BUBBLE_SIZE));
-				Bubble bubble = new Bubble(size);
-				
-				float x = Math.round(random(0, soni.depthWidth()-bubble.getSize()));
-				float y = Math.round(random(0, soni.depthHeight()-bubble.getSize()));
-				PVector pos = new PVector(x, y);
-				bubble.setPos(pos);
-				
-				bubbles.add(bubble);
-				
-//				System.out.println("X: "+x+" Y: "+y);
-			}
-		}
-	}
-	
-	private User getUser(int id){
-		User out = null;
-		for(User user : users){
-			if(user.getId() == id){
-				out = user;
-				break;
-			}
-		}
-		
-		return out;
-	}
-	
-	private boolean isHit(Bubble bubble, BodyPart part){
-		// check if x and y coordinates are close enough
-		if(isCloseEnough(bubble.getPos().x, part.getPart2d().x)
-			&& isCloseEnough(bubble.getPos().y, part.getPart2d().y)) return true;
-		return false;
-	}
-	
-	private boolean isCloseEnough(float bubblePos, float partPos){
-//		System.out.println("isCloseEnough: abs(" + bubblePos + " - " + partPos + ") < 15");
-		if(abs(bubblePos - partPos) < Constants.BODYPART_BUBBLE_MINIMUM_DISTANCE) return true;
-		return false;
-	}
-	
-	private void onBubbleHit(User user, Bubble bubble){
-		// TODO: specific points per bubble?
-		user.incrementScore(bubble.getPoints());
-	}
-	
 	private void drawBubble(Bubble bubble){
-		ellipseMode(CORNER);
-		determineFillColor(bubble.getColor());
-		ellipse(bubble.getPos().x, bubble.getPos().y, bubble.getSize(), bubble.getSize());
+		ellipseMode(CENTER);
+		float[] fc = Util.determineFillColor(bubble.getColor());
+		if(fc.length>3){
+			fill(fc[0],fc[1],fc[2],fc[3]);
+			ellipse(bubble.getPos().x, bubble.getPos().y, bubble.getSize(), bubble.getSize());
+		}
 	}
 	
 	private void drawHighscore(User user){
@@ -165,7 +122,7 @@ public class Controller extends PApplet {
 		//}
 		
 		// generate bubbles
-		generateBubbles();
+		bubblePool.generateBubbles(currentTs);
 		
 		// update cam info
 		soni.update();
@@ -196,8 +153,7 @@ public class Controller extends PApplet {
 		for(int i=0; i<userIds.length; i++){
 			if(soni.isTrackingSkeleton(userIds[i])){
 				
-				User user = getUser(userIds[i]);
-				ArrayList<Bubble> hits = new ArrayList<Bubble>();
+				User user = userPool.getUser(userIds[i]);
 				
 				drawHighscore(user);
 				
@@ -205,22 +161,11 @@ public class Controller extends PApplet {
 				for(BodyPart part : user.getParts()){
 					chooseColor(part);
 					get2DPositionAndDraw(part,userIds[i]);
-					for(Bubble bubble : bubbles){
-						// check for destroyed bubbles
-						if(isHit(bubble,part)){
-							hits.add(bubble);
-							onBubbleHit(user, bubble);
-						}
-					}
-					
-					// remove hit bubbles
-					for(Bubble bubble : hits){
-						bubbles.remove(bubble);
-					}
+					bubblePool.checkHits(part, user);
 				}
 				
 				// draw bubbles
-				for(Bubble bubble : bubbles){
+				for(Bubble bubble : bubblePool.getBubbles()){
 					bubble.move();
 					drawBubble(bubble);
 				}

@@ -1,3 +1,4 @@
+package com.hackattack.bubblewars.model;
 import java.util.Date;
 
 import processing.core.PVector;
