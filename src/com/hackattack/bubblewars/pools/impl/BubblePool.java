@@ -68,6 +68,7 @@ public class BubblePool implements Pool{
 	}
 	
 	public void verifyColors(){
+		// 1. Make ALL Colors IN ColorSet
 		for(Bubble bubble : bubbles){
 			if(!colorSet.isInSet(bubble.getColor())){
 				bubble.setColor(colorSet.getBubbleColor());

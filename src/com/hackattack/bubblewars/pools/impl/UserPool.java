@@ -1,7 +1,8 @@
 package com.hackattack.bubblewars.pools.impl;
 
-import java.util.Date;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import com.hackattack.bubblewars.main.Constants;
 import com.hackattack.bubblewars.model.BodyPart;
@@ -50,11 +51,25 @@ public class UserPool implements Pool{
 	}
 	
 	public void verifyColors(){
+		// 1. Make ALL Colors IN ColorSet
+		// 2. Make sure EACH Color FROM ColorSet is used
+		int[] cur_map = new int[Constants.NUM_COLORS];
+		List<BodyPart> toChange = new ArrayList<BodyPart>(); 
 		for(User user : users){
 			for(BodyPart part : user.getParts()){
 				if(!colorSet.isInSet(part.getColor())){
 					part.setColor(colorSet.getPartColor());
 				}
+				if(cur_map[part.getColor()] > 0){
+					toChange.add(part);
+				}
+				else{
+					cur_map[part.getColor()]++;
+				}
+			}
+			
+			for(Integer color : colorSet.getMissingColors(cur_map)){
+				if(toChange.size() > 0) toChange.remove(0).setColor(color);
 			}
 		}
 	}

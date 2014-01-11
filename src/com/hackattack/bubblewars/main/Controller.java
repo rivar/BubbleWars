@@ -78,7 +78,7 @@ public class Controller extends PApplet {
 	private void drawBodyPart(BodyPart part){
 		float d = (float) (512e3 / part.getPart3d().z)/4;
 		ellipseMode(CENTER);
-		float[] fc = Util.decodeFillColor(part.getColor());
+		float[] fc = Util.decodePartFillColor(part.getColor());
 		if(fc.length>3){
 			fill(fc[0],fc[1],fc[2],fc[3]);
 			ellipse(part.getPart2d().x, part.getPart2d().y, d, d);
@@ -103,7 +103,7 @@ public class Controller extends PApplet {
 	
 	private void drawBubble(Bubble bubble){
 		ellipseMode(CENTER);
-		float[] fc = Util.decodeFillColor(bubble.getColor());
+		float[] fc = Util.decodeBubbleFillColor(bubble.getColor());
 		if(fc.length>3){
 			fill(fc[0],fc[1],fc[2],fc[3]);
 			ellipse(bubble.getPos().x, bubble.getPos().y, bubble.getSize(), bubble.getSize());

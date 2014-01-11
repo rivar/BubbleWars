@@ -39,6 +39,14 @@ public class ColorSet {
 		}
 	}
 	
+	public Vector<Integer> getMissingColors(int[] cur_map){
+		Vector<Integer> out = new Vector<Integer>();
+		for(int i=0; i<map.length; i++){
+			if(map[i] != cur_map[i]) out.add(i);
+		}
+		return out;
+	}
+	
 	public void addColor(){
 		
 		if(map.length <= set.size()) return;
