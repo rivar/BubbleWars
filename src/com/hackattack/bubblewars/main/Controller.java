@@ -1,18 +1,19 @@
 package com.hackattack.bubblewars.main;
+
+import java.util.Date;
+import java.util.Vector;
+
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PImage;
-import processing.core.PVector;
 import SimpleOpenNI.SimpleOpenNI;
-
-import java.util.ArrayList;
-import java.util.Date;
 
 import com.hackattack.bubblewars.model.BodyPart;
 import com.hackattack.bubblewars.model.Bubble;
+import com.hackattack.bubblewars.model.ColorSet;
 import com.hackattack.bubblewars.model.User;
-import com.hackattack.bubblewars.pools.BubblePool;
-import com.hackattack.bubblewars.pools.UserPool;
+import com.hackattack.bubblewars.pools.impl.BubblePool;
+import com.hackattack.bubblewars.pools.impl.UserPool;
 import com.hackattack.bubblewars.util.Util;
 
 public class Controller extends PApplet {
@@ -26,16 +27,19 @@ public class Controller extends PApplet {
 	
 	Date startTs;
 	Date currentTs;
+	Date difficultyChangedTs;
 	PFont font;
 	PImage backgroundImage = null;
 	BubblePool bubblePool;
 	UserPool userPool;
+	ColorSet colorSet;
 	
 	
 	public void setup(){
 		// ts
 		startTs= new Date();
 		currentTs = startTs;
+		difficultyChangedTs = startTs;
 		
 		// cam setup
 		soni = new SimpleOpenNI(this);
@@ -44,9 +48,13 @@ public class Controller extends PApplet {
 		soni.enableUser();
 		smooth();
 		
+		// initial color-set
+		colorSet = new ColorSet(new Vector<Integer>());
+		colorSet.addColor();
+		
 		// pools
-		bubblePool = new BubblePool(soni);
-		userPool = new UserPool();
+		bubblePool = new BubblePool(soni, colorSet);
+		userPool = new UserPool(colorSet);
 		
 		size(soni.depthWidth(), soni.depthHeight());
 		
@@ -70,7 +78,7 @@ public class Controller extends PApplet {
 	private void drawBodyPart(BodyPart part){
 		float d = (float) (512e3 / part.getPart3d().z)/4;
 		ellipseMode(CENTER);
-		float[] fc = Util.determineFillColor(part.getColor());
+		float[] fc = Util.decodeFillColor(part.getColor());
 		if(fc.length>3){
 			fill(fc[0],fc[1],fc[2],fc[3]);
 			ellipse(part.getPart2d().x, part.getPart2d().y, d, d);
@@ -86,27 +94,34 @@ public class Controller extends PApplet {
 		drawBodyPart(part);
 	}
 	
-	private void chooseColor(BodyPart part){
-		if(currentTs.getTime() - part.getColorTs().getTime() > Constants.START_COLOR_INTERVAL){
-			// TODO: Interval [-0.5,3.5] 
-			part.setColor((int)Math.round(random(0, Constants.NUM_COLORS-1)));
-		}
-	}
+	//private void chooseColor(BodyPart part){
+	//	if(currentTs.getTime() - part.getColorTs().getTime() > Constants.START_COLOR_INTERVAL){
+	//		// TODO: Interval [-0.5,3.5] 
+	//		part.setColor((int)Math.round(random(0, Constants.NUM_COLORS-1)));
+	//	}
+	//}
 	
 	private void drawBubble(Bubble bubble){
 		ellipseMode(CENTER);
-		float[] fc = Util.determineFillColor(bubble.getColor());
+		float[] fc = Util.decodeFillColor(bubble.getColor());
 		if(fc.length>3){
 			fill(fc[0],fc[1],fc[2],fc[3]);
 			ellipse(bubble.getPos().x, bubble.getPos().y, bubble.getSize(), bubble.getSize());
 		}
 	}
-	
+
 	private void drawHighscore(User user){
 		textFont(font);
 		fill(255);
 		// TODO display highscore for multiple player
 		text("Score: " + user.getScore(), 10, 30);
+	}
+	
+	private void determineColorSet(){ 
+		if(currentTs.getTime() - difficultyChangedTs.getTime() > Constants.ADD_COLOR_INTERVAL){
+			difficultyChangedTs = currentTs;
+			colorSet.addColor();
+		}
 	}
 	
 	public void draw(){
@@ -121,8 +136,15 @@ public class Controller extends PApplet {
 		//	System.exit(CLOSE);
 		//}
 		
+		// determine color-set
+		determineColorSet();
+		
+		// set colors
+		bubblePool.verifyColors();
+		userPool.verifyColors();
+		
 		// generate bubbles
-		bubblePool.generateBubbles(currentTs);
+		bubblePool.generateBubbles();
 		
 		// update cam info
 		soni.update();
@@ -153,13 +175,14 @@ public class Controller extends PApplet {
 		for(int i=0; i<userIds.length; i++){
 			if(soni.isTrackingSkeleton(userIds[i])){
 				
+				userPool.generateColors(userIds[i]);
 				User user = userPool.getUser(userIds[i]);
 				
 				drawHighscore(user);
 				
 				// get positions and draw
 				for(BodyPart part : user.getParts()){
-					chooseColor(part);
+					//chooseColor(part);
 					get2DPositionAndDraw(part,userIds[i]);
 					bubblePool.checkHits(part, user);
 				}

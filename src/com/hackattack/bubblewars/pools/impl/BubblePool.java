@@ -1,4 +1,4 @@
-package com.hackattack.bubblewars.pools;
+package com.hackattack.bubblewars.pools.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -9,17 +9,21 @@ import SimpleOpenNI.SimpleOpenNI;
 import com.hackattack.bubblewars.main.Constants;
 import com.hackattack.bubblewars.model.BodyPart;
 import com.hackattack.bubblewars.model.Bubble;
+import com.hackattack.bubblewars.model.ColorSet;
 import com.hackattack.bubblewars.model.User;
+import com.hackattack.bubblewars.pools.Pool;
 import com.hackattack.bubblewars.util.Util;
 
-public class BubblePool {
+public class BubblePool implements Pool{
 
 	ArrayList<Bubble> bubbles = new ArrayList<Bubble>();
 	Date lastTs = new Date();
+	final ColorSet colorSet;
 	final SimpleOpenNI soni;
 	
-	public BubblePool(SimpleOpenNI soni){
+	public BubblePool(SimpleOpenNI soni, ColorSet colorSet){
 		this.soni=soni;
+		this.colorSet = colorSet;
 	}
 	
 	private boolean isHit(Bubble bubble, BodyPart part){
@@ -59,7 +63,27 @@ public class BubblePool {
 		user.incrementScore(bubble.getPoints());
 	}
 	
-	public void generateBubbles(Date currentTs){
+	private void generateColor(Bubble bubble){
+		bubble.setColor(colorSet.getBubbleColor());
+	}
+	
+	public void verifyColors(){
+		for(Bubble bubble : bubbles){
+			if(!colorSet.isInSet(bubble.getColor())){
+				bubble.setColor(colorSet.getBubbleColor());
+			}
+		}
+	}
+	
+	private void generatePosition(Bubble bubble){
+		float x = Math.round(Util.random(0, soni.depthWidth()-bubble.getSize()));
+		float y = Math.round(Util.random(0, soni.depthHeight()-bubble.getSize()));
+		PVector pos = new PVector(x, y);
+		bubble.setPos(pos);
+	}
+	
+	public void generateBubbles(){
+		Date currentTs = new Date();
 		if(currentTs.getTime() - lastTs.getTime() > Constants.BUBBLE_SPAWN_INTERVAL){
 			int num = (int)(Constants.MAX_BUBBLES - bubbles.size())/2;
 			for(int i = 0; i<num; i++){
@@ -68,11 +92,8 @@ public class BubblePool {
 				// generate int values of interval [min;max]: 
 				int size = Util.random(Constants.MIN_BUBBLE_SIZE, Constants.MAX_BUBBLE_SIZE);
 				Bubble bubble = new Bubble(size);
-				
-				float x = Math.round(Util.random(0, soni.depthWidth()-bubble.getSize()));
-				float y = Math.round(Util.random(0, soni.depthHeight()-bubble.getSize()));
-				PVector pos = new PVector(x, y);
-				bubble.setPos(pos);
+				generatePosition(bubble);
+				generateColor(bubble);
 				
 				bubbles.add(bubble);
 				

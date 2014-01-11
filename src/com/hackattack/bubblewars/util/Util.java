@@ -15,7 +15,7 @@ public class Util {
 		return min+(float)(Math.random()*((max-min)+1));
 	}
 	
-	public static float[] determineFillColor(int color){
+	public static float[] decodeFillColor(int color){
 		if(color == 0) return new float[]{255,0,0,80};
 		else if(color == 1) return new float[]{0,255,0,80};
 		else if(color == 2) return new float[]{0,0,255,80};
