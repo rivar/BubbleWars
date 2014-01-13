@@ -13,11 +13,8 @@ import com.hackattack.bubblewars.pools.Pool;
 public class UserPool implements Pool{
 
 	ArrayList<User> users = new ArrayList<User>();
-	final ColorSet colorSet;
+	ColorSet colorSet;
 	
-	public UserPool(ColorSet colorSet){
-		this.colorSet = colorSet;
-	}
 	
 	public void addUser(int userId){
 		users.add(new User(userId));
@@ -36,6 +33,10 @@ public class UserPool implements Pool{
 				part.setColor(colorSet.getPartColor());
 			}
 		}
+	}
+	
+	public List<User> getUsers(){
+		return users;
 	}
 	
 	public User getUser(int id){
@@ -72,5 +73,9 @@ public class UserPool implements Pool{
 				if(toChange.size() > 0) toChange.remove(0).setColor(color);
 			}
 		}
+	}
+	
+	public void setColorSet(ColorSet colorSet){
+		this.colorSet = colorSet;
 	}
 }

@@ -1,5 +1,7 @@
 package com.hackattack.bubblewars.util;
 
+import processing.core.PVector;
+
 
 public class Util {
 
@@ -29,5 +31,10 @@ public class Util {
 		else if(color == 2) return new float[]{0,0,255,80};
 		else if(color == 3) return new float[]{255,0,255,80};
 		else return new float[]{0,0,0,0};
+	}
+	
+	public static boolean isCloseEnough(PVector a, PVector b, PVector delta){
+		if(Math.abs(a.x - b.x) < delta.x && Math.abs(a.y - b.y) < delta.y) return true;
+		return false;
 	}
 }

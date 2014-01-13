@@ -28,17 +28,8 @@ public class BubblePool implements Pool{
 	
 	private boolean isHit(Bubble bubble, BodyPart part){
 		// check if x and y coordinates are close enough
-		//System.out.println("body part: " + part.getPartId());
 		if(bubble.getColor() == part.getColor())
-				if(isCloseEnough(bubble.getPos().x, part.getPart2d().x)
-						&& isCloseEnough(bubble.getPos().y, part.getPart2d().y)) return true;
-//			&& isCloseEnough(bubble.getPos().y, part.getPart2d().y)) System.exit(0);
-		return false;
-	}
-	
-	private boolean isCloseEnough(float bubblePos, float partPos){
-//		System.out.println("isCloseEnough: abs(" + bubblePos + " - " + partPos + ") = " + abs(bubblePos-partPos));
-		if(Math.abs(bubblePos - partPos) < Constants.BODYPART_BUBBLE_MINIMUM_DISTANCE) return true;
+				if(Util.isCloseEnough(bubble.getPos(), part.getPart2d(), Constants.BODYPART_BUBBLE_MINIMUM_DISTANCE)) return true;
 		return false;
 	}
 	

@@ -1,6 +1,7 @@
 package com.hackattack.bubblewars.model;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import SimpleOpenNI.SimpleOpenNI;
 
@@ -33,8 +34,18 @@ public class User {
 		return id;
 	}
 
-	public ArrayList<BodyPart> getParts() {
+	public List<BodyPart> getParts() {
 		return parts;
+	}
+	
+	public List<BodyPart> getHands(){
+		List<BodyPart> hands = new ArrayList<BodyPart>();
+		for(BodyPart part : parts){
+			if(part.getPartId() == SimpleOpenNI.SKEL_LEFT_HAND || part.getPartId() == SimpleOpenNI.SKEL_RIGHT_HAND){
+				hands.add(part);
+			}
+		}
+		return hands;
 	}
 	
 	public void incrementScore(int points){
