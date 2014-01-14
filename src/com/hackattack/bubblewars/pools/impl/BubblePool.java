@@ -83,7 +83,7 @@ public class BubblePool implements Pool{
 				
 				// generate int values of interval [min;max]: 
 				int size = Util.random(Constants.MIN_BUBBLE_SIZE, Constants.MAX_BUBBLE_SIZE);
-				Bubble bubble = new Bubble(size);
+				Bubble bubble = new Bubble(size,Constants.MAX_BUBBLE_SIZE-size);
 				generatePosition(bubble);
 				generateColor(bubble);
 				
@@ -96,5 +96,9 @@ public class BubblePool implements Pool{
 	
 	public ArrayList<Bubble> getBubbles(){
 		return bubbles;
+	}
+	
+	public void setTs(Date lastTs){
+		this.lastTs = lastTs;
 	}
 }

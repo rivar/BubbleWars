@@ -44,8 +44,9 @@ public class Bubble {
 		pos.set(pos.x+posXOffset, pos.y+posYOffset);
 	}
 	
-	public Bubble(int size){
+	public Bubble(int size, int points){
 		this.size = size;
+		this.points = points;
 	}
 	
 	public PVector getPos() {

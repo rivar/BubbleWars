@@ -12,14 +12,18 @@ public class User {
 	int id;
 	ArrayList<BodyPart> parts = new ArrayList<BodyPart>();
 	Date ts;
+
+	final int color;
 	
-	public User(int id){
+	public User(int id, int color){
 		this.id = id;
 		ts = new Date();
 		parts.add(new BodyPart(SimpleOpenNI.SKEL_LEFT_HAND));
 		parts.add(new BodyPart(SimpleOpenNI.SKEL_RIGHT_HAND));
 		parts.add(new BodyPart(SimpleOpenNI.SKEL_LEFT_FOOT));
 		parts.add(new BodyPart(SimpleOpenNI.SKEL_RIGHT_FOOT));
+		
+		this.color = color;
 	}
 	
 	public void setTs(Date ts){
@@ -54,5 +58,9 @@ public class User {
 	
 	public int getScore(){
 		return score;
+	}
+	
+	public int getColor(){
+		return color;
 	}
 }

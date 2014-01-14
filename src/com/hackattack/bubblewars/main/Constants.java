@@ -14,12 +14,22 @@ public class Constants {
 	public static final int MAX_BUBBLE_SIZE = 70;
 	public static final int HIGHSCORE_FONT_SIZE = 32;
 	public static final int COLOR_CHANGE_INTERVAL = 15*1000; // in ms
+	public static final int TEMPTING_BUBBLE_INITIAL_SIZE = 40;
+	public static final int TEMPTING_BUBBLE_MAX_GAIN = 250;
+	public static final int MENU_SIZE = 70;
+	public static final int MENU_CHOICE_TIME = 3; // in s
+	public static final int COUNTER_TIME = 30; // in s
+	public static final int ALLOWED_USERS = 2;
+	public static final int TEMPTING_BUBBLE_NEEDED_SIZE = 50;
 	
 	// distances
 	public static final PVector BODYPART_BUBBLE_MINIMUM_DISTANCE = new PVector(30, 30);
 	public static final PVector BODYPART_TEMPTING_MINIMUM_DISTANCE = new PVector(50, 50);
+	public static final int OPTIMAL_USER_DISTANCE = 1850;
 	
 	// modi
 	public static final int IN_GAME_MODE = 0;
 	public static final int TEMPTING_BUBBLE_MODE = 1;
+	public static final int MENU_MODE = 2;
+	public static final int HIGHSCORE_MODE = 3;
 }

@@ -34,5 +34,5 @@ public abstract class Action {
 	
 	public abstract int getNextMode();
 	
-	public abstract void prepare();
+	public abstract void prepare(int prevMode);
 }

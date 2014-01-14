@@ -16,8 +16,8 @@ public class UserPool implements Pool{
 	ColorSet colorSet;
 	
 	
-	public void addUser(int userId){
-		users.add(new User(userId));
+	public void addUser(int userId, int color){
+		users.add(new User(userId,color));
 	}
 	
 	public void removeUser(int userId){

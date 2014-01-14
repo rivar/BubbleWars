@@ -19,6 +19,7 @@ import com.hackattack.bubblewars.util.Util;
 
 public class InGameAction extends Action {
 	
+	Date startTs;
 	Date difficultyChangedTs;
 	BubblePool bubblePool;
 	ColorSet colorSet;
@@ -37,8 +38,13 @@ public class InGameAction extends Action {
 		getSurface().getUserPool().setColorSet(colorSet);
 	}
 	
-	public void prepare(){
+	public void prepare(int prevMode){
+		this.startTs = getSurface().getCurrentTs();
 		this.difficultyChangedTs = getSurface().getCurrentTs();
+		//bubblePool.setTs(getSurface().getCurrentTs());
+		for(User user : getSurface().getUserPool().getUsers()){
+			user.setTs(getSurface().getCurrentTs());
+		}
 	}
 	
 	private void drawBodyPart(BodyPart part){
@@ -61,11 +67,15 @@ public class InGameAction extends Action {
 		}
 	}
 	
-	private void drawHighscore(User user){
+	private void drawHighscores(){
 		getSurface().textFont(getFont());
 		getSurface().fill(255);
-		// TODO display highscore for multiple player
-		getSurface().text("Score: " + user.getScore(), 10, 30);
+		int i = 0;
+		for(User user : getSurface().getUserPool().getUsers())
+		{
+			getSurface().text("Score: " + user.getScore(), 10, 30+i*Constants.HIGHSCORE_FONT_SIZE);
+			i++;
+		}
 	}
 	
 	private void determineColorSet(){ 
@@ -76,13 +86,39 @@ public class InGameAction extends Action {
 	}
 	
 	public int getNextMode(){
-		// TODO
+		/*
+		for(User user : getSurface().getUserPool().getUsers()){
+			if(user.getScore() >= Constants.NEEDED_SCORE){
+				return Constants.HIGHSCORE_MODE;
+			}
+		}
+		*/
+		
+		if(Constants.COUNTER_TIME-Math.round(Math.abs((getSurface().getCurrentTs().getTime()-startTs.getTime()))/1000) <= 0){
+			return Constants.HIGHSCORE_MODE;
+		}
+		
 		return Constants.IN_GAME_MODE;
 	}
 	
+	private void drawCountdown(){
+		getSurface().textFont(getFont());
+		getSurface().fill(255);
+		int secs = Constants.COUNTER_TIME-Math.round(Math.abs((getSurface().getCurrentTs().getTime()-startTs.getTime()))/1000);
+		getSurface().text("Time: " + secs, 4*getSurface().soni.depthWidth()/5, 30);
+	}
+	
 	public void draw(){
+		
+		// draw background and player
 		getSurface().image(getBackground(),0,0);
 		getSurface().drawPlayer();
+		
+		// draw clock
+		drawCountdown();
+		
+		// draw highscores
+		drawHighscores();
 
 		// determine color-set
 		determineColorSet();
@@ -100,8 +136,6 @@ public class InGameAction extends Action {
 
 				getSurface().getUserPool().generateColors(userIds[i]);
 				User user = getSurface().getUserPool().getUser(userIds[i]);
-
-				drawHighscore(user);
 
 				// get positions and draw
 				for(BodyPart part : user.getParts()){
