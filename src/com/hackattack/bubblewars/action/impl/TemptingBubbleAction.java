@@ -108,9 +108,7 @@ public class TemptingBubbleAction extends Action{
 
 		// draw player
 		getSurface().background(255);
-		if(size > Constants.TEMPTING_BUBBLE_NEEDED_SIZE){
-			getSurface().drawPlayer();
-		}
+		getSurface().drawPlayer();
 
 		// determine bubble size
 		determineBubbleSize();

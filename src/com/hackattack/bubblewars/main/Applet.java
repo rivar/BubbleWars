@@ -122,7 +122,7 @@ public class Applet extends PApplet {
 
 	private boolean allowAddUser(){
 		// TODO
-		if(currentMode == Constants.IN_GAME_MODE || userPool.getUsers().size() >= Constants.ALLOWED_USERS){
+		if(currentMode == Constants.IN_GAME_MODE || currentMode == Constants.HIGHSCORE_MODE || userPool.getUsers().size() >= Constants.ALLOWED_USERS){
 			return false;
 		}
 		else{
@@ -131,7 +131,7 @@ public class Applet extends PApplet {
 	}
 
 	private boolean allowRemoveUser(){
-		if(currentMode == Constants.IN_GAME_MODE){
+		if(currentMode == Constants.IN_GAME_MODE || currentMode == Constants.HIGHSCORE_MODE){
 			return false;
 		}
 		else{

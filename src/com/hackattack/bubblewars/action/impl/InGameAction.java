@@ -130,27 +130,28 @@ public class InGameAction extends Action {
 		// generate bubbles
 		bubblePool.generateBubbles();
 
-		int[] userIds = getSurface().soni.getUsers();
-		for(int i=0; i<userIds.length; i++){
-			if(getSurface().soni.isTrackingSkeleton(userIds[i])){
+		//int[] userIds = getSurface().soni.getUsers();
+		//for(int i=0; i<userIds.length; i++){
+		for(User user : getSurface().getUserPool().getUsers()){
+			if(getSurface().soni.isTrackingSkeleton(user.getId())){
 
-				getSurface().getUserPool().generateColors(userIds[i]);
-				User user = getSurface().getUserPool().getUser(userIds[i]);
+				getSurface().getUserPool().generateColors(user.getId());
+				//User user = getSurface().getUserPool().getUser(userIds[i]);
 
 				// get positions and draw
 				for(BodyPart part : user.getParts()){
 					//chooseColor(part);
-					getSurface().get2DPosition(part,userIds[i]);
+					getSurface().get2DPosition(part,user.getId());
 					drawBodyPart(part);
 					bubblePool.checkHits(part, user);
 				}
-
-				// draw bubbles
-				for(Bubble bubble : bubblePool.getBubbles()){
-					bubble.move();
-					drawBubble(bubble);
-				}
 			}
+		}
+		
+		// draw bubbles
+		for(Bubble bubble : bubblePool.getBubbles()){
+			bubble.move();
+			drawBubble(bubble);
 		}
 	}
 }
