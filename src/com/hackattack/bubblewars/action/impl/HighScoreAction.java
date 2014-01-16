@@ -44,7 +44,7 @@ public class HighScoreAction extends Action{
 	public void draw(){
 		
 		// draw player
-		getSurface().background(255);
+		getSurface().image(getBackground(),0,0);
 		getSurface().drawPlayer();
 
 		// draw highscore screen

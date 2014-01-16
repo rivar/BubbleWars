@@ -21,11 +21,16 @@ public class Constants {
 	public static final int COUNTER_TIME = 30; // in s
 	public static final int ALLOWED_USERS = 2;
 	public static final int TEMPTING_BUBBLE_NEEDED_SIZE = 50;
+	public static final int MAX_DELTA_X = 20;
+	public static final int MAX_DELTA_Y = 20;
+	public static final int BUBBLE_HIT_ANIMATION_TIME = 3000; // in ms
+	public static final int BUBBLE_SPLASH_FONT_SIZE = 16;
+	public static final int TEMPTING_BUBBLE_SMASH_TIME = 3; // in s
 	
 	// distances
 	public static final PVector BODYPART_BUBBLE_MINIMUM_DISTANCE = new PVector(30, 30);
 	public static final PVector BODYPART_TEMPTING_MINIMUM_DISTANCE = new PVector(50, 50);
-	public static final int OPTIMAL_USER_DISTANCE = 1850;
+	public static final int OPTIMAL_USER_DISTANCE = 2250;
 	
 	// modi
 	public static final int IN_GAME_MODE = 0;

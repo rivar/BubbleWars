@@ -1,6 +1,6 @@
 package com.hackattack.bubblewars.action.impl;
 
-import java.util.Iterator;
+import java.util.Date;
 
 import processing.core.PConstants;
 import processing.core.PFont;
@@ -18,6 +18,16 @@ public class TemptingBubbleAction extends Action{
 
 	PVector pos;
 	float size = Constants.TEMPTING_BUBBLE_INITIAL_SIZE;
+	boolean tooClose = false;
+	
+	BodyPart lockedPart;
+	User lockedUser;
+	Date selTs;
+
+	boolean isGrowingX = true;
+	boolean isGrowingY = true;
+	int sizeDeltaX = 0;
+	int sizeDeltaY = 0;
 
 	// movement stabilizer determines how many pixels to one direction
 	int posXStabilizerCounter = 0;
@@ -34,9 +44,54 @@ public class TemptingBubbleAction extends Action{
 		super(surface, background, font);
 		pos = new PVector(getSurface().soni.depthWidth()/2, getSurface().soni.depthHeight()/2);
 	}
+	
+	private void setLock(BodyPart lockedPart, User user){
+		this.lockedPart = lockedPart;
+		this.lockedUser = user;
+	}
+
+	private void unlock(){
+		lockedPart = null;
+		lockedUser = null;
+		selTs = null;
+	}
+	
+	private void checkHit(){
+		if(size < Constants.TEMPTING_BUBBLE_NEEDED_SIZE) {
+			unlock();
+			return;
+		}
+		if(lockedPart == null){
+			for(User user : getSurface().getUserPool().getUsers()){
+				for(BodyPart hand : user.getHands()){
+					// locate hands position
+					getSurface().get2DPosition(hand,user.getId());
+
+					if(Util.isCloseEnough(pos, hand.getPart2d(), new PVector(size+sizeDeltaX/2,size+sizeDeltaY/2))){
+						// first time that hand is in range
+						selTs = getSurface().getCurrentTs();
+						setLock(hand,user);
+						return;
+					}
+				}
+			}
+		}
+		else{
+			checkLockedPart();
+		}
+	}
+
+	private void checkLockedPart(){
+		// locate hand
+		getSurface().get2DPosition(lockedPart,lockedUser.getId());
+		if(!Util.isCloseEnough(lockedPart.getPart2d(), pos, new PVector(size+sizeDeltaX/2,size+sizeDeltaY/2))){
+			unlock();
+		}
+	}
 
 	public int getNextMode(){
 		if(size >= Constants.TEMPTING_BUBBLE_NEEDED_SIZE){
+			/*
 			for(User user : getSurface().getUserPool().getUsers()){
 				Iterator<BodyPart> iter = user.getHands().iterator();
 				if(iter.hasNext()){
@@ -47,10 +102,17 @@ public class TemptingBubbleAction extends Action{
 						getSurface().get2DPosition(handB, user.getId());
 						if(Util.isCloseEnough(handA.getPart2d(), pos, new PVector(size/3,size/3)) ||
 								Util.isCloseEnough(handB.getPart2d(), pos, new PVector(size/3,size/3))) {
-							// hands smashed bubble --> go to next mode
+							// hands smashed bubble
 							return Constants.MENU_MODE;
 						}
 					}
+				}
+			}
+			*/
+			
+			if(selTs != null){
+				if(Math.abs(selTs.getTime() - getSurface().getCurrentTs().getTime())>=Constants.TEMPTING_BUBBLE_SMASH_TIME*1000){
+					return Constants.MENU_MODE;
 				}
 			}
 		}
@@ -59,10 +121,45 @@ public class TemptingBubbleAction extends Action{
 		return Constants.TEMPTING_BUBBLE_MODE;
 	}
 
+	private void resizeBubble(){
+		boolean useX=(Util.random(new Integer(0), new Integer(2))==0);
+		if(useX) resizeX();
+		else resizeY();
+	}
+
+	private void resizeY(){
+		if(isGrowingY){
+			sizeDeltaY++;
+			if(sizeDeltaY >= Constants.MAX_DELTA_Y){
+				isGrowingY = false;
+			}
+		}else{
+			sizeDeltaY--;
+			if(sizeDeltaY <= 0){
+				isGrowingY = true;
+			}
+		}
+	}
+
+	private void resizeX(){
+		if(isGrowingX){
+			sizeDeltaX++;
+			if(sizeDeltaX >= Constants.MAX_DELTA_X){
+				isGrowingX = false;
+			}
+		}else{
+			sizeDeltaX--;
+			if(sizeDeltaX <= 0){
+				isGrowingX = true;
+			}
+		}
+	}
+
 	private void moveCenter(){
+		if(lockedPart != null) return;
 		// TODO: just move in circle...
 		// TODO avoid running out of the frame not that dirty
-		if(pos.x < 0 || pos.x > 640 || pos.y < 0 || pos.y > 480){
+		if(pos.x < 1*getSurface().soni.depthWidth()/3 || pos.x > 2*getSurface().soni.depthWidth()/3 || pos.y < 1*getSurface().soni.depthHeight()/3 || pos.y > 2*getSurface().soni.depthHeight()/3){
 			posXStabilizerCounter = 0;
 			posYStabilizerCounter = 0;
 		}
@@ -95,6 +192,11 @@ public class TemptingBubbleAction extends Action{
 		for(User user : getSurface().getUserPool().getUsers()){
 			getSurface().soni.getCoM(user.getId(), position);
 			if(Math.abs(Constants.OPTIMAL_USER_DISTANCE-position.z)<optimalDiff){
+				if(Constants.OPTIMAL_USER_DISTANCE-position.z < 0){
+					tooClose = false;
+				}else{
+					tooClose = true;
+				}
 				optimalDiff = Math.abs(Constants.OPTIMAL_USER_DISTANCE-position.z);
 			}
 		}
@@ -103,27 +205,60 @@ public class TemptingBubbleAction extends Action{
 		if(add < 0) add = 0;
 		size = Constants.TEMPTING_BUBBLE_INITIAL_SIZE+add;
 	}
+	
+	private void drawText(){
+		getSurface().fill(255);
+		getSurface().textFont(getSurface().createFont("Arial", 36, true));
+		int xPos = getSurface().soni.depthWidth()/5;
+		int yPos = getSurface().soni.depthHeight()-30;
+		if(tooClose && size < Constants.TEMPTING_BUBBLE_NEEDED_SIZE){
+			getSurface().text("Step back a little", xPos, yPos);
+		}else if(size < Constants.TEMPTING_BUBBLE_NEEDED_SIZE){
+			getSurface().text("Come a little closer",xPos,yPos);
+		}else{
+			getSurface().text("Perfect distance",xPos,yPos);
+		}
+	}
 
 	public void draw(){
 
 		// draw player
-		getSurface().background(255);
+		getSurface().image(getBackground(),0,0);
 		getSurface().drawPlayer();
 
 		// determine bubble size
 		determineBubbleSize();
+		
+		// draw tempting text
+		drawText();
+		
+		// check hit
+		checkHit();
 
 		// draw tempting bubble
-		getSurface().fill(getSurface().color(0,255,0,180));
+		if(size >= Constants.TEMPTING_BUBBLE_NEEDED_SIZE){
+			getSurface().fill(getSurface().color(0,255,0,180));
+		}else{
+			getSurface().fill(getSurface().color(255,0,0,180));
+		}
 		getSurface().ellipseMode(PConstants.CENTER);
-		getSurface().ellipse(pos.x,pos.y, size, size);
+		getSurface().ellipse(pos.x,pos.y, size+sizeDeltaX, size+sizeDeltaY);
 
 		// add tempting text
-		getSurface().fill(0);
-		getSurface().text("Wanna Pop Some Bubbles?", 10, 30);
-
+		getSurface().fill(255);
+		getSurface().textFont(getSurface().createFont("Arial", 36, true));
+		getSurface().text("Wanna Pop Some Bubbles?", getSurface().soni.depthWidth()/5, 30);
+		
+		// text
+		if(selTs != null){
+			getSurface().textFont(getFont());
+			getSurface().fill(0);
+			int secs = Math.round(Constants.TEMPTING_BUBBLE_SMASH_TIME-Math.round(Math.abs((getSurface().getCurrentTs().getTime()-selTs.getTime()))/1000));
+			getSurface().text(secs, pos.x-10, pos.y+10);
+		}
+		
 		// move tempting bubble
-		// TODO
-		//moveCenter();
+		moveCenter();
+		resizeBubble();
 	}
 }

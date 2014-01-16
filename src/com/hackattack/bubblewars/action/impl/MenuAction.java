@@ -26,12 +26,26 @@ public class MenuAction extends Action{
 	User lockedUser;
 	PVector chosenMenu;
 
+	
+	boolean isGrowingX = true;
+	boolean isGrowingY = true;
+	int sizeDeltaX = 0;
+	int sizeDeltaY = 0;
+
+	// movement stabilizer determines how many pixels to one direction
+	int posXStabilizerCounter = 0;
+	int posYStabilizerCounter = 0;
+
+	/*
+	 * movement offset is applied to the bubbles as long as
+	 * the stabilizer counter is not 0. interval is [-1;1]
+	 */
+	int posXOffset = 0;
+	int posYOffset = 0;
+	
+	
 	public MenuAction(Applet surface, PImage background, PFont font){
 		super(surface,background,font);
-	}
-
-	private void moveMenu(PVector vector){
-		// TODO
 	}
 
 	public void prepare(int prevMode){
@@ -43,6 +57,36 @@ public class MenuAction extends Action{
 		// set ts
 		againstTimeTs = null;
 		survivalTs = null;
+	}
+	
+	private void moveMenu(PVector pos){
+		if(pos == chosenMenu) return;
+		
+		// TODO: just move in circle...
+		// TODO avoid running out of the frame not that dirty
+		/*
+		if(pos.x < 1*getSurface().soni.depthWidth()/3 || pos.x > 2*getSurface().soni.depthWidth()/3 || pos.y < 1*getSurface().soni.depthHeight()/3 || pos.y > 2*getSurface().soni.depthHeight()/3){
+			posXStabilizerCounter = 0;
+			posYStabilizerCounter = 0;
+		}
+
+		// TODO check for other bubbles to avoid collisions
+		// TODO play with max/min values
+		if(posXStabilizerCounter == 0){
+			// generate int values of interval [min;max]: Min + (int)(Math.random() * ((Max - Min) + 1))
+			posXStabilizerCounter = 10 + (int)(Math.random()*41);
+			posXOffset = -1 + (int)(Math.random() * 3);
+		} else{
+			posXStabilizerCounter--;
+		}
+		if(posYStabilizerCounter == 0){
+			posYStabilizerCounter = 10 + (int)(Math.random()*41);
+			posYOffset = -1 + (int)(Math.random() * 3);
+		} else{
+			posYStabilizerCounter--;
+		}
+		pos.set(pos.x+posXOffset, pos.y+posYOffset);
+		*/
 	}
 
 	public int getNextMode(){
@@ -109,11 +153,45 @@ public class MenuAction extends Action{
 			unlock();
 		}
 	}
+	
+	private void resizeMenus(){
+		boolean useX=(Util.random(new Integer(0), new Integer(2))==0);
+		if(useX) resizeX();
+		else resizeY();
+	}
+
+	private void resizeY(){
+		if(isGrowingY){
+			sizeDeltaY++;
+			if(sizeDeltaY >= Constants.MENU_SIZE/3){
+				isGrowingY = false;
+			}
+		}else{
+			sizeDeltaY--;
+			if(sizeDeltaY <= 0){
+				isGrowingY = true;
+			}
+		}
+	}
+
+	private void resizeX(){
+		if(isGrowingX){
+			sizeDeltaX++;
+			if(sizeDeltaX >= Constants.MENU_SIZE/3){
+				isGrowingX = false;
+			}
+		}else{
+			sizeDeltaX--;
+			if(sizeDeltaX <= 0){
+				isGrowingX = true;
+			}
+		}
+	}
 
 	public void draw(){
 
 		// draw player
-		getSurface().background(255);
+		getSurface().image(getBackground(),0,0);
 		getSurface().drawPlayer();
 
 		// check hit
@@ -122,42 +200,43 @@ public class MenuAction extends Action{
 		// slightly move menus
 		moveMenu(againstTimeMenu);
 		moveMenu(survivalMenu);
-
+		resizeMenus();
+		
 		// draw menus
 		getSurface().textFont(getFont());
 		getSurface().ellipseMode(PConstants.CENTER);
-		getSurface().fill(getSurface().color(0,255,0,80));
-		getSurface().ellipse(againstTimeMenu.x, againstTimeMenu.y, Constants.MENU_SIZE, Constants.MENU_SIZE);
-		getSurface().fill(0);
+		getSurface().fill(getSurface().color(255,0,0,80));
+		getSurface().ellipse(againstTimeMenu.x, againstTimeMenu.y, Constants.MENU_SIZE+sizeDeltaX, Constants.MENU_SIZE+sizeDeltaY);
+		getSurface().fill(255);
 		getSurface().text("Against The Time", againstTimeMenu.x-Constants.MENU_SIZE/2, againstTimeMenu.y-Constants.MENU_SIZE/2-10);
 		getSurface().text("Survival", survivalMenu.x-Constants.MENU_SIZE/2, survivalMenu.y-Constants.MENU_SIZE/2-10);
 		getSurface().fill(getSurface().color(255,0,0,80));
-		getSurface().ellipse(survivalMenu.x, survivalMenu.y, Constants.MENU_SIZE, Constants.MENU_SIZE);
+		getSurface().ellipse(survivalMenu.x, survivalMenu.y, Constants.MENU_SIZE+sizeDeltaX, Constants.MENU_SIZE+sizeDeltaY);
 
 		// draw choice clock
 		if(againstTimeTs != null){
 			int secs = Constants.MENU_CHOICE_TIME-Math.round(Math.abs((getSurface().getCurrentTs().getTime()-againstTimeTs.getTime()))/1000);
 			// draw circle
-			getSurface().fill(100);
-			getSurface().ellipse(againstTimeMenu.x, againstTimeMenu.y, Constants.MENU_SIZE, Constants.MENU_SIZE);
+			getSurface().fill(getSurface().color(0,255,0));
+			getSurface().ellipse(againstTimeMenu.x, againstTimeMenu.y, Constants.MENU_SIZE+sizeDeltaX, Constants.MENU_SIZE+sizeDeltaY);
 
 			// draw text
 			getSurface().textFont(getFont());
 			//getSurface().textMode(PConstants.CENTER);
-			getSurface().fill(255);
-			getSurface().text(secs+"", againstTimeMenu.x, againstTimeMenu.y);
+			getSurface().fill(0);
+			getSurface().text(secs+"", againstTimeMenu.x-10, againstTimeMenu.y+10);
 		}
 		else if(survivalTs != null){
 			int secs = Constants.MENU_CHOICE_TIME-Math.round(Math.abs((getSurface().getCurrentTs().getTime()-survivalTs.getTime()))/1000);
 			// draw circle
-			getSurface().fill(100);
-			getSurface().ellipse(survivalMenu.x, survivalMenu.y, Constants.MENU_SIZE, Constants.MENU_SIZE);
+			getSurface().fill(getSurface().color(0,255,0));
+			getSurface().ellipse(survivalMenu.x, survivalMenu.y, Constants.MENU_SIZE+sizeDeltaX, Constants.MENU_SIZE+sizeDeltaY);
 
 			// draw text
 			getSurface().textFont(getFont());
 			//getSurface().textMode(PConstants.CENTER);
-			getSurface().fill(255);
-			getSurface().text(secs+"", survivalMenu.x, survivalMenu.y);
+			getSurface().fill(0);
+			getSurface().text(secs+"", survivalMenu.x-10, survivalMenu.y+10);
 		}
 	}
 }

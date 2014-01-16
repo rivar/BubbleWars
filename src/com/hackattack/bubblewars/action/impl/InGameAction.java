@@ -1,6 +1,8 @@
 package com.hackattack.bubblewars.action.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Vector;
 
 import processing.core.PConstants;
@@ -23,6 +25,7 @@ public class InGameAction extends Action {
 	Date difficultyChangedTs;
 	BubblePool bubblePool;
 	ColorSet colorSet;
+	List<Bubble> hitted = new ArrayList<Bubble>();
 	
 	public InGameAction(Applet surface, PImage background, PFont font){
 		super(surface,background,font);
@@ -63,7 +66,7 @@ public class InGameAction extends Action {
 		float[] fc = Util.decodeBubbleFillColor(bubble.getColor());
 		if(fc.length>3){
 			getSurface().fill(fc[0],fc[1],fc[2],fc[3]);
-			getSurface().ellipse(bubble.getPos().x, bubble.getPos().y, bubble.getSize(), bubble.getSize());
+			getSurface().ellipse(bubble.getPos().x, bubble.getPos().y, bubble.getSize()+bubble.getDeltaX(), bubble.getSize()+bubble.getDeltaY());
 		}
 	}
 	
@@ -108,6 +111,23 @@ public class InGameAction extends Action {
 		getSurface().text("Time: " + secs, 4*getSurface().soni.depthWidth()/5, 30);
 	}
 	
+	private void drawAnimation(){
+		List<Bubble> rem = new ArrayList<Bubble>();
+		getSurface().fill(255);
+		getSurface().textFont(getSurface().createFont("Arial",Constants.BUBBLE_SPLASH_FONT_SIZE,true));
+		for(Bubble bubble : hitted){
+			long diff = getSurface().getCurrentTs().getTime()-bubble.getHitTs().getTime();
+			getSurface().text("+"+bubble.getPoints(), bubble.getPos().x, bubble.getPos().y-diff/100);
+			if(diff >= Constants.BUBBLE_HIT_ANIMATION_TIME){
+				rem.add(bubble);
+			}
+		}
+		
+		for(Bubble bubble : rem){
+			hitted.remove(bubble);
+		}
+	}
+	
 	public void draw(){
 		
 		// draw background and player
@@ -123,6 +143,9 @@ public class InGameAction extends Action {
 		// determine color-set
 		determineColorSet();
 
+		// draw hit animation
+		drawAnimation();
+		
 		// set colors
 		bubblePool.verifyColors();
 		getSurface().getUserPool().verifyColors();
@@ -143,13 +166,14 @@ public class InGameAction extends Action {
 					//chooseColor(part);
 					getSurface().get2DPosition(part,user.getId());
 					drawBodyPart(part);
-					bubblePool.checkHits(part, user);
+					hitted.addAll(bubblePool.checkHits(part, user, getSurface().getCurrentTs()));
 				}
 			}
 		}
 		
 		// draw bubbles
 		for(Bubble bubble : bubblePool.getBubbles()){
+			bubble.resizeBubble();
 			bubble.move();
 			drawBubble(bubble);
 		}

@@ -2,6 +2,7 @@ package com.hackattack.bubblewars.pools.impl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import processing.core.PVector;
 import SimpleOpenNI.SimpleOpenNI;
@@ -17,9 +18,9 @@ import com.hackattack.bubblewars.util.Util;
 public class BubblePool implements Pool{
 
 	ArrayList<Bubble> bubbles = new ArrayList<Bubble>();
-	Date lastTs = new Date();
 	final ColorSet colorSet;
 	final SimpleOpenNI soni;
+	Date lastTs = new Date();
 	
 	public BubblePool(SimpleOpenNI soni, ColorSet colorSet){
 		this.soni=soni;
@@ -33,12 +34,13 @@ public class BubblePool implements Pool{
 		return false;
 	}
 	
-	public void checkHits(BodyPart part, User user){
+	public List<Bubble> checkHits(BodyPart part, User user, Date ts){
 		ArrayList<Bubble> hits = new ArrayList<Bubble>();
 		for(Bubble bubble : bubbles){
 			// check for destroyed bubbles
 			if(isHit(bubble,part)){
 				hits.add(bubble);
+				bubble.setHitTs(ts);
 				onBubbleHit(user, bubble);
 			}
 		}
@@ -47,6 +49,8 @@ public class BubblePool implements Pool{
 		for(Bubble bubble : hits){
 			bubbles.remove(bubble);
 		}
+		
+		return hits;
 	}
 	
 	private void onBubbleHit(User user, Bubble bubble){
@@ -83,7 +87,7 @@ public class BubblePool implements Pool{
 				
 				// generate int values of interval [min;max]: 
 				int size = Util.random(Constants.MIN_BUBBLE_SIZE, Constants.MAX_BUBBLE_SIZE);
-				Bubble bubble = new Bubble(size,Constants.MAX_BUBBLE_SIZE-size);
+				Bubble bubble = new Bubble(size,Constants.MAX_BUBBLE_SIZE-size+1);
 				generatePosition(bubble);
 				generateColor(bubble);
 				

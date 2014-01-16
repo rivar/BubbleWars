@@ -1,5 +1,9 @@
 package com.hackattack.bubblewars.model;
+import java.util.Date;
+
 import processing.core.PVector;
+
+import com.hackattack.bubblewars.util.Util;
 
 public class Bubble {
 
@@ -7,6 +11,13 @@ public class Bubble {
 	int color = 0;
 	int size;
 	int points = 10; // TODO....
+	
+	Date hitTs;
+	
+	boolean isGrowingX = true;
+	boolean isGrowingY = true;
+	int sizeDeltaX = 0;
+	int sizeDeltaY = 0;
 	
 	// movement stabilizer determines how many pixels to one direction
 	int posXStabilizerCounter = 0;
@@ -18,6 +29,40 @@ public class Bubble {
 	 */
 	int posXOffset = 0;
 	int posYOffset = 0;
+	
+	public void resizeBubble(){
+		boolean useX=(Util.random(new Integer(0), new Integer(2))==0);
+		if(useX) resizeX();
+		else resizeY();
+	}
+
+	private void resizeY(){
+		if(isGrowingY){
+			sizeDeltaY++;
+			if(sizeDeltaY >= size/3){
+				isGrowingY = false;
+			}
+		}else{
+			sizeDeltaY--;
+			if(sizeDeltaY <= 0){
+				isGrowingY = true;
+			}
+		}
+	}
+
+	private void resizeX(){
+		if(isGrowingX){
+			sizeDeltaX++;
+			if(sizeDeltaX >= size/3){
+				isGrowingX = false;
+			}
+		}else{
+			sizeDeltaX--;
+			if(sizeDeltaX <= 0){
+				isGrowingX = true;
+			}
+		}
+	}
 	
 	public void move(){
 		// TODO avoid running out of the frame not that dirty
@@ -62,6 +107,7 @@ public class Bubble {
 		this.color = color;
 	}
 	public int getPoints() {
+		// TODO
 		return points;
 	}
 	public void setPoints(int points) {
@@ -73,4 +119,22 @@ public class Bubble {
 	public void setSize(int size) {
 		this.size = size;
 	}
+	
+	public int getDeltaX(){
+		return sizeDeltaX;
+	}
+	
+	public int getDeltaY(){
+		return sizeDeltaY;
+	}
+
+	public Date getHitTs() {
+		return hitTs;
+	}
+
+	public void setHitTs(Date hitTs) {
+		this.hitTs = hitTs;
+	}
+	
+	
 }

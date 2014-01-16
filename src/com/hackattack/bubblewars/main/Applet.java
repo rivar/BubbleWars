@@ -68,7 +68,7 @@ public class Applet extends PApplet {
 		userColorSet.add(color(0,0,255));
 
 		// ======= InGameAction ========
-		PImage bgInGame = loadImage("background_in_game.jpg");
+		PImage bgInGame = loadImage("background_in_game.png");
 		bgInGame.resize(soni.depthWidth(), soni.depthHeight());
 
 		// screen font
@@ -78,7 +78,7 @@ public class Applet extends PApplet {
 		actionMap.put(Constants.IN_GAME_MODE,new InGameAction(this,bgInGame,fontInGame));
 
 		// ======= TemptingBubbleAction =========
-		PImage bgTempt = loadImage("background_in_game.jpg");
+		PImage bgTempt = loadImage("background_in_game.png");
 		bgTempt.resize(soni.depthWidth(), soni.depthHeight());
 
 		// screen font
@@ -88,7 +88,7 @@ public class Applet extends PApplet {
 		actionMap.put(Constants.TEMPTING_BUBBLE_MODE,new TemptingBubbleAction(this,bgTempt,fontTempt));
 
 		// ======= MenuAction =========
-		PImage bgMenu = loadImage("background_in_game.jpg");
+		PImage bgMenu = loadImage("background_in_game.png");
 		bgMenu.resize(soni.depthWidth(), soni.depthHeight());
 
 		// screen font
@@ -98,7 +98,7 @@ public class Applet extends PApplet {
 		actionMap.put(Constants.MENU_MODE,new MenuAction(this,bgMenu,fontMenu));
 
 		// ======= HighScoreAction =========
-		PImage bgScore = loadImage("background_in_game.jpg");
+		PImage bgScore = loadImage("background_in_game.png");
 		bgScore.resize(soni.depthWidth(), soni.depthHeight());
 
 		// screen font
