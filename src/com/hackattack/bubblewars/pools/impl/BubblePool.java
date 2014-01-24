@@ -72,8 +72,8 @@ public class BubblePool implements Pool{
 	}
 	
 	private void generatePosition(Bubble bubble){
-		float x = Math.round(Util.random(0, soni.depthWidth()-bubble.getSize()));
-		float y = Math.round(Util.random(0, soni.depthHeight()-bubble.getSize()));
+		float x = Math.round(Util.random(0, Constants.WIDTH-bubble.getSize()));
+		float y = Math.round(Util.random(0, Constants.HEIGHT-bubble.getSize()));
 		PVector pos = new PVector(x, y);
 		bubble.setPos(pos);
 	}

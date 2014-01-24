@@ -42,7 +42,8 @@ public class TemptingBubbleAction extends Action{
 
 	public TemptingBubbleAction(Applet surface, PImage background, PFont font){
 		super(surface, background, font);
-		pos = new PVector(getSurface().soni.depthWidth()/2, getSurface().soni.depthHeight()/2);
+		//pos = new PVector(getSurface().soni.depthWidth()/2, getSurface().soni.depthHeight()/2);
+		pos = new PVector(Constants.WIDTH/2, Constants.HEIGHT/2);
 	}
 	
 	private void setLock(BodyPart lockedPart, User user){
@@ -159,7 +160,8 @@ public class TemptingBubbleAction extends Action{
 		if(lockedPart != null) return;
 		// TODO: just move in circle...
 		// TODO avoid running out of the frame not that dirty
-		if(pos.x < 1*getSurface().soni.depthWidth()/3 || pos.x > 2*getSurface().soni.depthWidth()/3 || pos.y < 1*getSurface().soni.depthHeight()/3 || pos.y > 2*getSurface().soni.depthHeight()/3){
+		//if(pos.x < 1*getSurface().soni.depthWidth()/3 || pos.x > 2*getSurface().soni.depthWidth()/3 || pos.y < 1*getSurface().soni.depthHeight()/3 || pos.y > 2*getSurface().soni.depthHeight()/3){
+		if(pos.x < 1*Constants.WIDTH/3 || pos.x > 2*Constants.HEIGHT/3 || pos.y < 1*Constants.WIDTH/3 || pos.y > 2*Constants.HEIGHT/3){
 			posXStabilizerCounter = 0;
 			posYStabilizerCounter = 0;
 		}
@@ -183,7 +185,8 @@ public class TemptingBubbleAction extends Action{
 	}
 
 	public void prepare(int prevMode){
-		pos = new PVector(getSurface().soni.depthWidth()/2, getSurface().soni.depthHeight()/2);
+		//pos = new PVector(getSurface().soni.depthWidth()/2, getSurface().soni.depthHeight()/2);
+		pos = new PVector(Constants.WIDTH/2, Constants.HEIGHT/2);
 	}
 
 	private void determineBubbleSize(){
@@ -209,8 +212,10 @@ public class TemptingBubbleAction extends Action{
 	private void drawText(){
 		getSurface().fill(255);
 		getSurface().textFont(getSurface().createFont("Arial", 36, true));
-		int xPos = getSurface().soni.depthWidth()/5;
-		int yPos = getSurface().soni.depthHeight()-30;
+		//int xPos = getSurface().soni.depthWidth()/5;
+		//int yPos = getSurface().soni.depthHeight()-30;
+		int xPos = Constants.WIDTH/5;
+		int yPos = Constants.HEIGHT-30;
 		if(tooClose && size < Constants.TEMPTING_BUBBLE_NEEDED_SIZE){
 			getSurface().text("Step back a little", xPos, yPos);
 		}else if(size < Constants.TEMPTING_BUBBLE_NEEDED_SIZE){
@@ -247,7 +252,8 @@ public class TemptingBubbleAction extends Action{
 		// add tempting text
 		getSurface().fill(255);
 		getSurface().textFont(getSurface().createFont("Arial", 36, true));
-		getSurface().text("Wanna Pop Some Bubbles?", getSurface().soni.depthWidth()/5, 30);
+		//getSurface().text("Wanna Pop Some Bubbles?", getSurface().soni.depthWidth()/5, 30);
+		getSurface().text("Wanna Pop Some Bubbles?", Constants.WIDTH/5, 30);
 		
 		// text
 		if(selTs != null){

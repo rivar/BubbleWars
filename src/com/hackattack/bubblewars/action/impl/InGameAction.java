@@ -52,7 +52,7 @@ public class InGameAction extends Action {
 	
 	private void drawBodyPart(BodyPart part){
 		// TODO: draw user in Action? (since he has to be drawn in every action)
-		float d = (float) (512e3 / part.getPart3d().z)/4;
+		float d = (float) (512e3 / part.getPart3d().z)/2;
 		getSurface().ellipseMode(PConstants.CENTER);
 		float[] fc = Util.decodePartFillColor(part.getColor());
 		if(fc.length>3){
@@ -108,7 +108,7 @@ public class InGameAction extends Action {
 		getSurface().textFont(getFont());
 		getSurface().fill(255);
 		int secs = Constants.COUNTER_TIME-Math.round(Math.abs((getSurface().getCurrentTs().getTime()-startTs.getTime()))/1000);
-		getSurface().text("Time: " + secs, 4*getSurface().soni.depthWidth()/5, 30);
+		getSurface().text("Time: " + secs, 4*Constants.WIDTH/5, 30);
 	}
 	
 	private void drawAnimation(){
@@ -157,7 +157,6 @@ public class InGameAction extends Action {
 		//for(int i=0; i<userIds.length; i++){
 		for(User user : getSurface().getUserPool().getUsers()){
 			if(getSurface().soni.isTrackingSkeleton(user.getId())){
-
 				getSurface().getUserPool().generateColors(user.getId());
 				//User user = getSurface().getUserPool().getUser(userIds[i]);
 

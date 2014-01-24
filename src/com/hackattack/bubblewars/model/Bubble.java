@@ -3,6 +3,7 @@ import java.util.Date;
 
 import processing.core.PVector;
 
+import com.hackattack.bubblewars.main.Constants;
 import com.hackattack.bubblewars.util.Util;
 
 public class Bubble {
@@ -66,7 +67,7 @@ public class Bubble {
 	
 	public void move(){
 		// TODO avoid running out of the frame not that dirty
-		if(pos.x < 0 || pos.x > 640 || pos.y < 0 || pos.y > 480){
+		if(pos.x < 0 || pos.x > Constants.WIDTH || pos.y < 0 || pos.y > Constants.HEIGHT){
 			posXStabilizerCounter = 0;
 			posYStabilizerCounter = 0;
 		}
@@ -134,7 +135,5 @@ public class Bubble {
 
 	public void setHitTs(Date hitTs) {
 		this.hitTs = hitTs;
-	}
-	
-	
+	}	
 }

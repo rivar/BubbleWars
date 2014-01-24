@@ -29,7 +29,7 @@ public class HighScoreAction extends Action{
 	private void drawAgainstTimeScore(){
 		getSurface().fill(0);
 		getSurface().rectMode(PConstants.CORNER);
-		getSurface().rect(0, 0, getSurface().soni.depthWidth()/2, getSurface().soni.depthHeight()/2);
+		getSurface().rect(0, 0, Constants.WIDTH/2, Constants.HEIGHT/2);
 		
 		getSurface().textFont(getFont());
 		int i = 1;
@@ -39,6 +39,10 @@ public class HighScoreAction extends Action{
 			getSurface().text("Player "+i+" Score: " + user.getScore(), 10, 10+i*Constants.HIGHSCORE_FONT_SIZE);
 			i++;
 		}
+	}
+	
+	private void drawFlash(){
+		// TODO
 	}
 
 	public void draw(){

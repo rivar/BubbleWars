@@ -51,8 +51,8 @@ public class MenuAction extends Action{
 	public void prepare(int prevMode){
 		// TODO
 		// set initial position
-		againstTimeMenu = new PVector(getSurface().soni.depthWidth()/3,getSurface().soni.depthHeight()/3);
-		survivalMenu = new PVector(2*getSurface().soni.depthWidth()/3,2*getSurface().soni.depthHeight()/3);
+		againstTimeMenu = new PVector(Constants.WIDTH/3,Constants.HEIGHT/3);
+		survivalMenu = new PVector(2*Constants.WIDTH/3,2*Constants.HEIGHT/3);
 
 		// set ts
 		againstTimeTs = null;
