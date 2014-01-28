@@ -29,7 +29,7 @@ public class Util {
 		if(color == 0) return new float[]{255,0,0,80};
 		else if(color == 1) return new float[]{0,255,0,80};
 		else if(color == 2) return new float[]{0,0,255,80};
-		else if(color == 3) return new float[]{255,0,255,80};
+		else if(color == 3) return new float[]{255,255,0,80};
 		else return new float[]{0,0,0,0};
 	}
 	

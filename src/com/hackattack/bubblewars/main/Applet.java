@@ -68,8 +68,8 @@ public class Applet extends PApplet {
 		soni = new SimpleOpenNI(this);
 		soni.setMirror(true);
 		soni.enableDepth();
-		soni.enableHand();
-		soni.startGesture(SimpleOpenNI.GESTURE_WAVE);
+		//soni.enableHand();
+		//soni.startGesture(SimpleOpenNI.GESTURE_WAVE);
 		soni.enableUser();
 		//smooth();
 		//size(soni.depthWidth(), soni.depthHeight());

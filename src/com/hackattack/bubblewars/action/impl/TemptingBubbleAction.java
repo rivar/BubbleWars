@@ -211,11 +211,11 @@ public class TemptingBubbleAction extends Action{
 	
 	private void drawText(){
 		getSurface().fill(255);
-		getSurface().textFont(getSurface().createFont("Arial", 36, true));
+		getSurface().textFont(getSurface().createFont("Arial", Constants.TEMPTING_FONT_SIZE, true));
 		//int xPos = getSurface().soni.depthWidth()/5;
 		//int yPos = getSurface().soni.depthHeight()-30;
-		int xPos = Constants.WIDTH/5;
-		int yPos = Constants.HEIGHT-30;
+		int xPos = Constants.WIDTH/4;
+		int yPos = Constants.HEIGHT-50;
 		if(tooClose && size < Constants.TEMPTING_BUBBLE_NEEDED_SIZE){
 			getSurface().text("Step back a little", xPos, yPos);
 		}else if(size < Constants.TEMPTING_BUBBLE_NEEDED_SIZE){
@@ -251,9 +251,9 @@ public class TemptingBubbleAction extends Action{
 
 		// add tempting text
 		getSurface().fill(255);
-		getSurface().textFont(getSurface().createFont("Arial", 36, true));
+		getSurface().textFont(getSurface().createFont("Arial", Constants.TEMPTING_FONT_SIZE, true));
 		//getSurface().text("Wanna Pop Some Bubbles?", getSurface().soni.depthWidth()/5, 30);
-		getSurface().text("Wanna Pop Some Bubbles?", Constants.WIDTH/5, 30);
+		getSurface().text("Wanna Pop Some Bubbles?", Constants.WIDTH/4, 50);
 		
 		// text
 		if(selTs != null){

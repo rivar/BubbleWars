@@ -13,12 +13,13 @@ public class Constants {
 	public static int MIN_BUBBLE_SIZE = 60;
 	public static int MAX_BUBBLE_SIZE = 140;
 	public static final int HIGHSCORE_FONT_SIZE = 32;
+	public static final int TEMPTING_FONT_SIZE = 48;
 	public static final int COLOR_CHANGE_INTERVAL = 15*1000; // in ms
 	public static int TEMPTING_BUBBLE_INITIAL_SIZE = 40;
 	public static final int TEMPTING_BUBBLE_MAX_GAIN = 250;
 	public static int MENU_SIZE = 70;
 	public static final int MENU_CHOICE_TIME = 3; // in s
-	public static final int COUNTER_TIME = 20; // in s
+	public static final int COUNTER_TIME = 40; // in s
 	public static final int ALLOWED_USERS = 2;
 	public static int TEMPTING_BUBBLE_NEEDED_SIZE = 50;
 	public static final int MAX_DELTA_X = 20;
