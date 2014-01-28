@@ -126,6 +126,8 @@ public class Applet extends PApplet {
 
 		// set entry mode
 		currentMode = Constants.TEMPTING_BUBBLE_MODE;
+		//currentMode = Constants.HIGHSCORE_MODE;
+		//actionMap.get(Constants.HIGHSCORE_MODE).prepare(0);
 		
 		/*
 		if(frame != null)
